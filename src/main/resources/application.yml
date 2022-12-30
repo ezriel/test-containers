@@ -1,0 +1,5 @@
+datasource:
+  mwapp:
+    jdbc-url: jdbc:postgresql://localhost:5432/testdb
+    username: sil
+    password: sil
