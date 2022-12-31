@@ -34,6 +34,6 @@ public class CustomerController {
     @GetMapping(value = "/search", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public CustomerSearchResponseDto searchCustomer(@RequestParam(value = "pesel", required = false) String pesel, @RequestParam(value = "firstName", required = false) String firstName) {
-        return null;
+        return customerService.searchCustomer(pesel, firstName);
     }
 }

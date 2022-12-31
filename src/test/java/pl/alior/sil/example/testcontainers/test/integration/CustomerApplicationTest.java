@@ -103,6 +103,17 @@ public class CustomerApplicationTest {
                 .andDo(MockMvcResultHandlers.print());
     }
 
+    @Test
+    @Order(3)
+    public void shouldSearchByName() throws Exception {
+        mockMvc.perform(get("/customers/search").param("firstName", "Kamil").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.customers").exists())
+                .andExpect(jsonPath("$.customers[0].pesel").value("89081415271"))
+                .andExpect(jsonPath("$.customers[1].pesel").value("84081415271"))
+                .andDo(MockMvcResultHandlers.print());
+    }
+
     private CustomerDto prepareCreateCustomerRequest(String fistName, String lastName, String pesel) {
         CustomerDto customerDto = new CustomerDto();
         customerDto.setFirstName(fistName);
