@@ -1,12 +1,12 @@
 package pl.alior.sil.example.testcontainers.test.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -23,8 +23,10 @@ import pl.alior.sil.example.testcontainers.data.model.CustomerDto;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -33,6 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @Testcontainers
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class CustomerApplicationTest {
 
     @Autowired
@@ -42,7 +45,7 @@ public class CustomerApplicationTest {
     ObjectMapper mapper;
 
     @Container
-    static JdbcDatabaseContainer<?> postgresContainer = new PostgreSQLContainer("postgres:14.5").withInitScript("db/init.sql");
+    static JdbcDatabaseContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:14.5").withInitScript("db/init.sql");
 
     @BeforeAll
     static void beforeAll() {
@@ -56,7 +59,6 @@ public class CustomerApplicationTest {
 
     @DynamicPropertySource
     static void setUp(DynamicPropertyRegistry registry) {
-        System.out.println("DJFSKJDHJFDSFJKDSHF");
         Startables.deepStart(postgresContainer).join();
 
         registry.add("datasource.mwapp.jdbc-url", postgresContainer::getJdbcUrl);
@@ -65,6 +67,7 @@ public class CustomerApplicationTest {
     }
 
     @Test
+    @Order(0)
     public void isWorking() throws Exception {
         String jdbcUrl = postgresContainer.getJdbcUrl();
         String username = postgresContainer.getUsername();
@@ -77,20 +80,42 @@ public class CustomerApplicationTest {
         assertEquals(530, result);
     }
 
-    @Test
-    public void shouldCreateUser() throws Exception {
+    @ParameterizedTest
+    @MethodSource("createCustomersData")
+    @Order(1)
+    public void shouldCreateUser(String fistName, String lastName, String pesel, String expectedId) throws Exception {
         mockMvc.perform(post("/customers").contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsBytes(prepareCreateCustomerRequest())))
+                        .content(mapper.writeValueAsBytes(prepareCreateCustomerRequest(fistName, lastName, pesel))))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.customerId").value("1"))
+                .andExpect(jsonPath("$.customerId").value(expectedId))
                 .andDo(MockMvcResultHandlers.print());
     }
 
-    private CustomerDto prepareCreateCustomerRequest() {
+    @Test
+    @Order(2)
+    public void shouldGetCustomer() throws Exception {
+        mockMvc.perform(get("/customers/2").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.customerId").value("2"))
+                .andExpect(jsonPath("$.firstName").value("Kamil"))
+                .andExpect(jsonPath("$.lastName").value("Kotliński"))
+                .andExpect(jsonPath("$.pesel").value("89081415271"))
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    private CustomerDto prepareCreateCustomerRequest(String fistName, String lastName, String pesel) {
         CustomerDto customerDto = new CustomerDto();
-        customerDto.setFistName("Robert");
-        customerDto.setLastName("Burek");
-        customerDto.setPesel("87081415271");
+        customerDto.setFirstName(fistName);
+        customerDto.setLastName(lastName);
+        customerDto.setPesel(pesel);
         return customerDto;
+    }
+
+    private static Stream<Arguments> createCustomersData() {
+        return Stream.of(
+                Arguments.of("Robert", "Burek", "87081415271", "1"),
+                Arguments.of("Kamil", "Kotliński", "89081415271", "2"),
+                Arguments.of("Kamil", "Lasek", "84081415271", "3")
+        );
     }
 }

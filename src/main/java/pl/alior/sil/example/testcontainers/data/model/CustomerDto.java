@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CustomerDto {
     @NotNull
-    private String fistName;
+    private String firstName;
     @NotNull
     private String lastName;
     @NotNull
