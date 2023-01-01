@@ -48,6 +48,7 @@ public class CustomerApplicationTest {
 
     @DynamicPropertySource
     static void setUp(DynamicPropertyRegistry registry) {
+        registry.add("spring.flyway.enabled", () -> "false");
         Startables.deepStart(postgresContainer).join();
 
         registry.add("datasource.mwapp.jdbc-url", postgresContainer::getJdbcUrl);

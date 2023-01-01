@@ -48,6 +48,7 @@ public class CustomerApplicationEdgeTest {
 
     @DynamicPropertySource
     static void setUp(DynamicPropertyRegistry registry) throws Exception {
+        registry.add("spring.flyway.enabled", () -> "false");
         Startables.deepStart(postgresContainer, toxiContainer).join();
         System.out.println("Postgres URL: " + postgresContainer.getJdbcUrl());
         System.out.println("Postgres Mapped Port: " + postgresContainer.getFirstMappedPort());
