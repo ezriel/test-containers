@@ -1,5 +1,5 @@
 # Setup docker on virtual machine
-1. Install the VirtualBox with selected *Skip unattended installation*
+1. Install the VirtualBox with selected *Skip unattended installation* (required for VirtualBox 7.X to be able open terminal)
 2. Download the Linux version you need from https://ubuntu.com/download/desktop
 3. Create virtual machine with downloaded iso image
     - 6GB RAM
@@ -10,7 +10,7 @@
 5. ***$ sudo apt-get update***
 6. ***$ sudo apt install docker.io***
 7. ***$ sudo snap install docker***
-8. ***$sudo usermod -aG docker $USER***
+8. ***$sudo usermod -aG docker $USER*** (allow run docker cmd without sudo)
 9. Log out and log back in## so that your group membership is re-evaluated
 10. Verify that you can run docker commands without sudo ***$ docker run hello-world***
 11. Configure Docker to be accessed remotely

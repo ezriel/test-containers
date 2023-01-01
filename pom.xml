@@ -79,6 +79,13 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+            <version>9.10.2</version>
+            <scope>test</scope>
+        </dependency>
+
         <!-- tests end -->
 
         <dependency>
