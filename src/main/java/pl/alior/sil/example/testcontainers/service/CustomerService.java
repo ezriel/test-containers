@@ -1,5 +1,6 @@
 package pl.alior.sil.example.testcontainers.service;
 
+import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,7 @@ import pl.alior.sil.example.testcontainers.data.model.CustomerSearchResponseDto;
 import pl.alior.sil.example.testcontainers.data.repository.mwapp.CustomerRepository;
 import pl.alior.sil.example.testcontainers.ex.CustomerExistException;
 import pl.alior.sil.example.testcontainers.ex.CustomerNotFoundException;
+import pl.alior.sil.example.testcontainers.ex.SearchException;
 
 import java.util.List;
 
@@ -41,8 +43,13 @@ public class CustomerService {
     }
 
     public CustomerSearchResponseDto searchCustomer(String pesel, String firstName) {
-        List<CustomerEntity> searchDbResult = repository.findByFirstNameOrPesel(firstName, pesel);
-        log.info("Found {} customers", searchDbResult.size());
-        return new CustomerSearchResponseDto(searchDbResult.stream().map(entity -> modelMapper.map(entity, CustomerResponseDto.class)).toList());
+        try {
+            List<CustomerEntity> searchDbResult = repository.findByFirstNameOrPesel(firstName, pesel);
+            log.info("Found {} customers", searchDbResult.size());
+            return new CustomerSearchResponseDto(searchDbResult.stream().map(entity -> modelMapper.map(entity, CustomerResponseDto.class)).toList());
+        } catch (Exception ex) {
+            log.error("Unable to search {}", ex.getMessage());
+            throw new SearchException("Unable to search customers");
+        }
     }
 }

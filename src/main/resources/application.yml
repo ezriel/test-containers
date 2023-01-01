@@ -1,5 +1,9 @@
+resilience4j:
+  instances:
 datasource:
   mwapp:
     jdbc-url: jdbc:postgresql://localhost:5432/testdb
     username: sil
     password: sil
+    maximum-pool-size: 1
+    connection-timeout: 2000

@@ -31,7 +31,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-//@WebMvcTest
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @Testcontainers
@@ -46,16 +45,6 @@ public class CustomerApplicationTest {
 
     @Container
     static JdbcDatabaseContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:14.5").withInitScript("db/init.sql");
-
-    @BeforeAll
-    static void beforeAll() {
-        postgresContainer.start();
-    }
-
-    @AfterAll
-    static void afterAll() {
-        postgresContainer.stop();
-    }
 
     @DynamicPropertySource
     static void setUp(DynamicPropertyRegistry registry) {
