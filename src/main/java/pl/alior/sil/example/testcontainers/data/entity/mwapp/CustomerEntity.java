@@ -2,15 +2,18 @@ package pl.alior.sil.example.testcontainers.data.entity.mwapp;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "customer")
 @Getter
 @Setter
+@ToString
 public class CustomerEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,6 +27,9 @@ public class CustomerEntity {
     private String pesel;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<AddressEntity> addresses;
 
     @PrePersist
     private void prePersist() {

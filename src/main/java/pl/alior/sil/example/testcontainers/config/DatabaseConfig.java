@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
+import java.util.Properties;
 
 @Configuration
 @EnableTransactionManagement
@@ -43,6 +44,9 @@ public class DatabaseConfig {
         emf.setDataSource(dataSource());
         emf.setJpaVendorAdapter(jpaVendorAdapter());
         emf.setPackagesToScan("pl.alior.sil.example.testcontainers.data.entity.mwapp");
+        Properties jpaProperties = new Properties();
+        jpaProperties.put("hibernate.default_schema", "customers");
+        emf.setJpaProperties(jpaProperties);
         return emf;
     }
 

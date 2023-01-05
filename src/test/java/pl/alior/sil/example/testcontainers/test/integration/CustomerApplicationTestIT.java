@@ -35,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Testcontainers
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class CustomerApplicationTest {
+public class CustomerApplicationTestIT {
 
     @Autowired
     private MockMvc mockMvc;
