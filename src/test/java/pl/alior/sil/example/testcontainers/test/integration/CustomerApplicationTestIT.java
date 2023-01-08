@@ -44,7 +44,7 @@ public class CustomerApplicationTestIT {
     ObjectMapper mapper;
 
     @Container
-    static JdbcDatabaseContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:14.5").withInitScript("db/init.sql");
+    static JdbcDatabaseContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:14.5").withUsername("customers").withInitScript("db/init.sql");
 
     @DynamicPropertySource
     static void setUp(DynamicPropertyRegistry registry) {

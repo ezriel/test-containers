@@ -1,6 +1,7 @@
 package pl.alior.sil.example.testcontainers.test.integration;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -10,6 +11,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.lifecycle.Startables;
+import pl.alior.sil.example.testcontainers.CleanUpTest;
 import pl.alior.sil.example.testcontainers.data.entity.mwapp.AddressEntity;
 import pl.alior.sil.example.testcontainers.data.entity.mwapp.CustomerEntity;
 import pl.alior.sil.example.testcontainers.data.repository.mwapp.CustomerRepository;
@@ -20,10 +22,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Testcontainers
-class CustomerRepositoryTestIT {
+@ExtendWith(CleanUpTest.class)
+class CustomerRepositoryTestIT {//extends CleanUpTest {
 
     @Container
-    static JdbcDatabaseContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:14.5");
+    static JdbcDatabaseContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:14.5").withUsername("customers");
     @Autowired
     CustomerRepository customerRepository;
 

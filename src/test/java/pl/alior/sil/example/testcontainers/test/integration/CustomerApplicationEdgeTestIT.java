@@ -38,6 +38,7 @@ public class CustomerApplicationEdgeTestIT {
 
     @Container
     static JdbcDatabaseContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:14.5")
+            .withUsername("customers")
             .withInitScript("db/init.sql")
             .withNetwork(network)
             .withExposedPorts(5432)
